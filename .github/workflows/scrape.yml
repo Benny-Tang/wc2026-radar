@@ -1,0 +1,43 @@
+name: WC2026 Scraper → GitHub Pages
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  scrape-and-publish:
+    name: Scrape & Publish Results
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm install axios
+
+      - name: Run scraper
+        env:
+          BRIGHT_DATA_API_KEY: ${{ secrets.BRIGHT_DATA_API_KEY }}
+        run: node src/scraper.js
+
+      - name: Commit & push results.json
+        run: |
+          git config user.name "WC2026 Scraper Bot"
+          git config user.email "scraper-bot@users.noreply.github.com"
+          git add docs/results.json
+          git diff --staged --quiet && exit 0
+          git commit -m "🤖 scrape: $(date -u +'%Y-%m-%d %H:%M UTC')"
+          git push
