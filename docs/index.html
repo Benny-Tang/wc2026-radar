@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WC2026 Tipster Radar · Bright Data</title>
+<style>
+:root {
+  --bg:#0d1117; --surface:#161b22; --border:#30363d;
+  --accent:#238636; --blue:#1f6feb; --gold:#e3b341;
+  --red:#da3633; --text:#e6edf3; --muted:#8b949e;
+  --tg:#2AABEE; --wx:#07C160; --xhs:#FF2442; --fb:#1877F2; --tw:#1d9bf0;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh}
+
+/* HEADER */
+.header{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.logo{font-size:1.05rem;font-weight:700;display:flex;align-items:center;gap:8px}
+.logo em{color:var(--gold);font-style:normal}
+.badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;text-transform:uppercase;letter-spacing:.5px}
+.bd-badge{background:#1f6feb20;color:#1f6feb;border:1px solid #1f6feb40}
+.live-badge{background:#da363320;color:#da3633;border:1px solid #da363350;display:flex;align-items:center;gap:4px}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--muted);display:inline-block}
+.dot.live{background:#3fb950;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* STATS */
+.stats{display:flex;gap:1px;background:var(--border);border-bottom:1px solid var(--border)}
+.stat{flex:1;background:var(--surface);padding:14px 12px;text-align:center;min-width:80px}
+.stat-n{font-size:1.5rem;font-weight:700}
+.stat-l{font-size:10px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.5px}
+.gold{color:var(--gold)}.green{color:#3fb950}.blue{color:var(--tg)}.orange{color:#f78166}
+
+/* CONTROLS */
+.controls{padding:12px 20px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+button{cursor:pointer;border:none;border-radius:6px;padding:7px 14px;font-size:12px;font-weight:600;transition:opacity .15s}
+button:hover{opacity:.85}
+.btn-run{background:var(--accent);color:#fff}
+.btn-export{background:var(--blue);color:#fff}
+select,input[type=text]{background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:6px 10px;font-size:12px;outline:none}
+.check-label{display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;color:var(--muted)}
+
+/* TABS */
+.tabs{padding:12px 20px 0;display:flex;gap:6px;flex-wrap:wrap;background:var(--surface);border-bottom:1px solid var(--border)}
+.tab{padding:5px 12px;border-radius:6px 6px 0 0;font-size:11px;font-weight:600;cursor:pointer;background:var(--bg);color:var(--muted);border:1px solid var(--border);border-bottom:none;transition:all .15s}
+.tab:hover{color:var(--text)}
+.tab.active{background:var(--surface);color:var(--text);border-color:var(--border)}
+.tab.tg.active{color:var(--tg)}.tab.tw.active{color:var(--tw)}.tab.wx.active{color:var(--wx)}.tab.xhs.active{color:var(--xhs)}.tab.fb.active{color:var(--fb)}
+
+/* GRID */
+.content{padding:16px 20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:10px}
+
+/* CARD */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px;transition:border-color .15s;cursor:default}
+.card:hover{border-color:var(--blue)}
+.card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:6px;margin-bottom:8px}
+.ptag{font-size:9px;font-weight:700;padding:2px 7px;border-radius:3px;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap}
+.p-telegram{background:#2aabee20;color:var(--tg)}
+.p-wechat{background:#07c16020;color:var(--wx)}
+.p-xiaohongshu{background:#ff244220;color:var(--xhs)}
+.p-facebook{background:#1877f220;color:var(--fb)}
+.p-twitter{background:#1d9bf020;color:var(--tw)}
+.p-web{background:#8b949e20;color:var(--muted)}
+.score{font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px}
+.s-high{background:#e3b34120;color:var(--gold)}.s-med{background:#3fb95020;color:#3fb950}.s-low{background:#8b949e20;color:var(--muted)}
+.uname{font-weight:700;font-size:.9rem;margin-bottom:1px}
+.dname{font-size:11px;color:var(--muted);margin-bottom:7px}
+.bio{font-size:11px;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:8px;line-height:1.5}
+.meta{display:flex;gap:10px;font-size:10px;color:var(--muted);margin-bottom:8px;flex-wrap:wrap}
+.tags{display:flex;gap:3px;flex-wrap:wrap;margin-bottom:7px}
+.htag{font-size:9px;padding:1px 5px;border-radius:3px;background:#1f6feb15;color:var(--blue);font-weight:600}
+.links{display:flex;gap:5px;flex-wrap:wrap}
+.lbtn{font-size:10px;font-weight:600;padding:3px 9px;border-radius:4px;text-decoration:none;display:inline-flex;align-items:center;gap:3px;background:var(--border);color:var(--text);transition:opacity .15s}
+.lbtn:hover{opacity:.8}
+.lbtn.tg{background:#2aabee20;color:var(--tg)}
+.lbtn.pr{background:#1f6feb20;color:var(--blue)}
+
+/* EMPTY / LOADING */
+.empty{text-align:center;padding:60px 20px;color:var(--muted);grid-column:1/-1}
+.empty h3{font-size:1rem;margin-bottom:6px;color:var(--text)}
+.pbar{height:3px;background:var(--border);border-radius:2px;overflow:hidden;max-width:200px;margin:12px auto}
+.pfill{height:100%;background:var(--blue);transition:width .5s;border-radius:2px;width:0%}
+
+/* STATUS BAR */
+.sbar{font-size:11px;color:var(--muted);padding:6px 20px;background:var(--bg);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:6px}
+
+/* LAST UPDATED */
+.updated{font-size:10px;color:var(--muted);margin-left:auto}
+
+@media(max-width:600px){.grid{grid-template-columns:1fr}.stats{flex-wrap:wrap}.stat{min-width:90px}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">⚽ WC2026 <em>Tipster Radar</em> <span class="badge bd-badge">Bright Data</span></div>
+  <div style="display:flex;align-items:center;gap:8px">
+    <span class="badge live-badge"><span class="dot" id="sdot"></span><span id="stext">Loading...</span></span>
+    <span class="updated" id="updated-time"></span>
+  </div>
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="stat-n gold" id="s1">—</div><div class="stat-l">🥇 Tier 1</div></div>
+  <div class="stat"><div class="stat-n green" id="s2">—</div><div class="stat-l">Total Found</div></div>
+  <div class="stat"><div class="stat-n blue" id="s3">—</div><div class="stat-l">Telegram ✈️</div></div>
+  <div class="stat"><div class="stat-n orange" id="s4">—</div><div class="stat-l">Platforms</div></div>
+</div>
+
+<div class="controls">
+  <select id="tier" onchange="render()">
+    <option value="tier1">🥇 Tier 1 — High Value</option>
+    <option value="tier2">🥈 Tier 2 — Medium</option>
+    <option value="tier3">🥉 Tier 3 — Low</option>
+    <option value="all">All Results</option>
+  </select>
+  <label class="check-label"><input type="checkbox" id="tgonly" onchange="render()"> Telegram only</label>
+  <input type="text" id="search" placeholder="Search username, bio..." oninput="render()" style="flex:1;min-width:140px">
+  <button class="btn-export" onclick="exportCSV()">⬇️ CSV Export</button>
+  <button class="btn-run" onclick="triggerAction()">▶ Run Scrape (Actions)</button>
+</div>
+
+<div class="tabs" id="tabs">
+  <div class="tab active" data-p="all" onclick="setTab(this)">All</div>
+  <div class="tab tg"  data-p="telegram"      onclick="setTab(this)">✈️ Telegram</div>
+  <div class="tab tw"  data-p="twitter"        onclick="setTab(this)">🐦 X/Twitter</div>
+  <div class="tab wx"  data-p="wechat"         onclick="setTab(this)">💬 WeChat</div>
+  <div class="tab xhs" data-p="xiaohongshu"    onclick="setTab(this)">📕 小红书</div>
+  <div class="tab fb"  data-p="facebook"       onclick="setTab(this)">📘 Facebook</div>
+</div>
+
+<div class="content">
+  <div class="grid" id="grid">
+    <div class="empty">
+      <h3>Loading results...</h3>
+      <div class="pbar"><div class="pfill" id="pfill" style="width:60%"></div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── CONFIG ────────────────────────────────────────────────────────────────────
+// results.json lives in the same folder (docs/) on GitHub Pages
+const RESULTS_URL = "./results.json";
+// Your GitHub repo for the "Run Scrape" button
+const GITHUB_REPO = "benny-tang/wc2026-actors";
+const ACTIONS_URL = `https://github.com/${GITHUB_REPO}/actions`;
+
+let data = null;
+let activePlatform = "all";
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+window.addEventListener("DOMContentLoaded", loadData);
+
+async function loadData() {
+  try {
+    const res = await fetch(RESULTS_URL + "?t=" + Date.now());
+    data = await res.json();
+    updateStats(data.meta);
+    setStatus("live", `${data.meta.total} results · auto-refreshes every 6h`);
+    if (data.meta.scraped_at) {
+      const d = new Date(data.meta.scraped_at);
+      document.getElementById("updated-time").textContent =
+        "Last scraped: " + d.toLocaleString("en-MY", {month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"});
+    }
+    render();
+  } catch (e) {
+    setStatus("", "No results yet — trigger a scrape via GitHub Actions");
+    document.getElementById("grid").innerHTML =
+      `<div class="empty"><h3>No data yet</h3>
+       <p>Add your <strong>BRIGHT_DATA_API_KEY</strong> secret in GitHub, then click <strong>Run Scrape</strong>.</p>
+       <div class="pbar"><div class="pfill" style="width:0%"></div></div></div>`;
+  }
+}
+
+function updateStats(meta) {
+  document.getElementById("s1").textContent = meta.tier1 ?? 0;
+  document.getElementById("s2").textContent = meta.total ?? 0;
+  document.getElementById("s3").textContent = meta.with_telegram ?? 0;
+  document.getElementById("s4").textContent = Object.keys(meta.by_platform || {}).length;
+}
+
+// ── RENDER ────────────────────────────────────────────────────────────────────
+function render() {
+  if (!data) return;
+  const tier   = document.getElementById("tier").value;
+  const tgOnly = document.getElementById("tgonly").checked;
+  const q      = document.getElementById("search").value.toLowerCase().trim();
+
+  let rows = data[tier] || data.all || [];
+
+  if (activePlatform !== "all")
+    rows = rows.filter(r => r.platform.toLowerCase().includes(activePlatform));
+  if (tgOnly)
+    rows = rows.filter(r => !!r.telegram_in_bio);
+  if (q)
+    rows = rows.filter(r =>
+      (r.username+r.display_name+r.bio+r.post_text).toLowerCase().includes(q));
+
+  const grid = document.getElementById("grid");
+  if (!rows.length) {
+    grid.innerHTML = `<div class="empty"><h3>No results match</h3><p>Try changing the filters above.</p></div>`;
+    return;
+  }
+  grid.innerHTML = rows.map(cardHTML).join("");
+}
+
+function cardHTML(r) {
+  const sc = r.score >= 50 ? "s-high" : r.score >= 25 ? "s-med" : "s-low";
+  const pc = ptClass(r.platform);
+  const tags = (r.hashtags_found||[]).slice(0,3).map(h=>`<span class="htag">${h}</span>`).join("");
+  const tgLink = r.telegram_in_bio
+    ? `<a href="${esc(r.telegram_in_bio)}" target="_blank" class="lbtn tg">✈️ Telegram</a>` : "";
+  const prLink = r.profile_url
+    ? `<a href="${esc(r.profile_url)}" target="_blank" class="lbtn pr">🔗 Profile</a>` : "";
+  return `<div class="card">
+    <div class="card-top">
+      <span class="ptag ${pc}">${r.platform.split(" ")[0]}</span>
+      <span class="score ${sc}">Score: ${r.score}</span>
+    </div>
+    <div class="uname">${esc(r.username)||"—"}</div>
+    ${r.display_name?`<div class="dname">${esc(r.display_name)}</div>`:""}
+    ${r.bio?`<div class="bio">${esc(r.bio)}</div>`:""}
+    <div class="meta">
+      ${r.followers?`<span>👥 ${fmt(r.followers)}</span>`:""}
+      ${r.engagement?`<span>❤️ ${fmt(r.engagement)}</span>`:""}
+      ${r.location?`<span>📍 ${esc(r.location)}</span>`:""}
+    </div>
+    ${tags?`<div class="tags">${tags}</div>`:""}
+    <div class="links">${tgLink}${prLink}</div>
+  </div>`;
+}
+
+// ── TABS ──────────────────────────────────────────────────────────────────────
+function setTab(el) {
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+  el.classList.add("active");
+  activePlatform = el.dataset.p;
+  render();
+}
+
+// ── EXPORT CSV ────────────────────────────────────────────────────────────────
+function exportCSV() {
+  if (!data) return;
+  const tier = document.getElementById("tier").value;
+  const rows = data[tier] || data.all || [];
+  const csv = [
+    "Platform,Username,Display Name,Followers,Engagement,Score,Telegram,Profile URL,Bio",
+    ...rows.map(r=>[
+      r.platform, r.username,
+      `"${(r.display_name||"").replace(/"/g,'""')}"`,
+      r.followers, r.engagement, r.score,
+      r.telegram_in_bio, r.profile_url,
+      `"${(r.bio||"").slice(0,120).replace(/"/g,'""')}"`,
+    ].join(","))
+  ].join("\n");
+  const a = document.createElement("a");
+  a.href = "data:text/csv," + encodeURIComponent(csv);
+  a.download = `wc2026_${tier}_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+}
+
+// ── TRIGGER ACTIONS ───────────────────────────────────────────────────────────
+function triggerAction() {
+  window.open(ACTIONS_URL, "_blank");
+}
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+function ptClass(p="") {
+  const pl=p.toLowerCase();
+  if(pl.includes("telegram")) return "p-telegram";
+  if(pl.includes("wechat")||pl.includes("微信")) return "p-wechat";
+  if(pl.includes("xiaohongshu")||pl.includes("红书")) return "p-xiaohongshu";
+  if(pl.includes("facebook")) return "p-facebook";
+  if(pl.includes("twitter")||pl.includes("x (")) return "p-twitter";
+  return "p-web";
+}
+function setStatus(type,msg){
+  document.getElementById("sdot").className="dot"+(type==="live"?" live":"");
+  document.getElementById("stext").textContent=msg;
+}
+function fmt(n){
+  if(n>=1e6) return (n/1e6).toFixed(1)+"M";
+  if(n>=1e3) return (n/1e3).toFixed(1)+"K";
+  return n;
+}
+function esc(s){
+  const d=document.createElement("div");
+  d.textContent=s||"";
+  return d.innerHTML;
+}
+</script>
+</body>
+</html>
