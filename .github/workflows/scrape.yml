@@ -1,4 +1,4 @@
-name: WC2026 Scraper → GitHub Pages
+name: WC2026 Scraper to GitHub Pages
 
 on:
   schedule:
@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   scrape-and-publish:
-    name: Scrape & Publish Results
+    name: Scrape and Publish Results
     runs-on: ubuntu-latest
     timeout-minutes: 45
 
@@ -33,11 +33,11 @@ jobs:
           BRIGHT_DATA_API_KEY: ${{ secrets.BRIGHT_DATA_API_KEY }}
         run: node src/scraper.js
 
-      - name: Commit & push results.json
+      - name: Commit and push results
         run: |
           git config user.name "WC2026 Scraper Bot"
           git config user.email "scraper-bot@users.noreply.github.com"
           git add docs/results.json
           git diff --staged --quiet && exit 0
-          git commit -m "🤖 scrape: $(date -u +'%Y-%m-%d %H:%M UTC')"
+          git commit -m "scrape update $(date -u +'%Y-%m-%d %H:%M UTC')"
           git push
